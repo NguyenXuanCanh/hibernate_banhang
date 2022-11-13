@@ -4,6 +4,7 @@
  */
 package hibernatebanhang.DAL;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import org.hibernate.Session;
@@ -30,9 +31,12 @@ public class OrderDAL {
         
     }
 
-    public void addOrder(Order obj)
+    public Serializable addOrder(Order obj)
     {
-        session.save(obj);
+        Serializable id=session.save(obj);
+        return id;
+        
+//        session.getTransaction().commit();
     }
 
     public void deleteOrder(Order obj)

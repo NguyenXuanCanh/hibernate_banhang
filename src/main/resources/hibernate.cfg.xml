@@ -10,6 +10,7 @@
         <property name="connection.url">jdbc:mysql://localhost:3306/Market?serverTimezone=UTC&amp;useUnicode=true&amp;characterEncoding=utf8</property>
         <property name="connection.username">root</property>
         <property name="connection.password">xuancanh</property>
+        <property name="connection.autocommit">true</property>
       <!-- JDBC connection pool (use the built-in) -->
         <property name="connection.pool_size">4</property>    
         <!-- Enable Hibernate's automatic session context management -->
@@ -19,7 +20,11 @@
         <!-- Show all executed SQL to console -->
         <property name="show_sql">true</property>
         <mapping class="hibernatebanhang.DAL.Category" />
-        <mapping class="hibernatebanhang.DAL.Vegetable" />
+        <mapping class="hibernatebanhang.DAL.Vegetable" />        
+        <mapping class="hibernatebanhang.DAL.Order" />
+        <mapping class="hibernatebanhang.DAL.OrderDetail" />
+        <mapping class="hibernatebanhang.DAL.Customers" />
+
         
     </session-factory>
 </hibernate-configuration>

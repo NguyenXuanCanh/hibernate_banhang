@@ -2,15 +2,25 @@ package GUI;
 
 
 import BLL.CategoryBLL;
+import BLL.CustomersBLL;
+import BLL.OrderBLL;
+import BLL.OrderDetailBLL;
 import BLL.VegetableBLL;
 import hibernatebanhang.DAL.Category;
+import hibernatebanhang.DAL.Customers;
+import hibernatebanhang.DAL.Order;
+import hibernatebanhang.DAL.OrderDetail;
+import hibernatebanhang.DAL.Vegetable;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.Serializable;
 import java.sql.SQLException;
+import java.sql.Time;
+import java.time.LocalTime;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -26,11 +36,13 @@ import javax.swing.table.DefaultTableModel;
  * @author caothanh
  */
 public class OrderForm extends JFrame implements ActionListener {
+    CustomersBLL customerBLL=new CustomersBLL();
+    Customers customer=new Customers();
 
     VegetableBLL vegBLL = new VegetableBLL();
     CategoryBLL cateBLL = new CategoryBLL();
     int page = 1;
-
+    Object[][] dataOrder=new Object[0][4];
     OrderForm() {
         init();
         
@@ -62,7 +74,7 @@ public class OrderForm extends JFrame implements ActionListener {
 
     private void init() {
         this.setTitle("Select Vegetable");
-        this.setSize(800, 600);
+        this.setSize(1000, 600);
         this.setLayout(new BorderLayout(20, 20));
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
@@ -79,6 +91,10 @@ public class OrderForm extends JFrame implements ActionListener {
         DefaultTableModel model = new DefaultTableModel(data, title);
         jTable1.setModel(model);
         
+//        Object[][] dataOrder=new Object[0][0];
+//        String[] titleOrder = {"VegID", "Name", "Quantity"};
+//        DefaultTableModel modelOrder = new DefaultTableModel(data, titleOrder);
+//        jTable1Order.setModel(modelOrder);
     }
     private void loadCategory()
     {
@@ -125,7 +141,16 @@ public class OrderForm extends JFrame implements ActionListener {
         jptop.add(jbtnFind);
         jptop.add(jbtnRefresh);
         jptop.add(cbCategory);
-
+        jbtnAdd = new JButton("Add to order");
+        jptop.add(jbtnAdd);
+        jbtnAdd.addActionListener((ActionEvent e) -> {
+            btnAdd_Click(e);
+        });
+        jbtnSave = new JButton("Save order");
+        jbtnSave.addActionListener((ActionEvent e) -> {
+            btnSave_Click(e);
+        });
+        jptop.add(jbtnSave);
         this.getContentPane().add(jptop, BorderLayout.NORTH);
     }
 
@@ -136,16 +161,13 @@ public class OrderForm extends JFrame implements ActionListener {
     }
 
     private void addJPRight() {
+        jScrollPane1Order = new JScrollPane();
         jpcenter = new JPanel();
         jpcenter.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 20));
-        jbtnAdd = new JButton("Add to order");
         
-        jbtnAdd.addActionListener((ActionEvent e) -> {
-            btnAdd_Click(e);
-        });
-//        jScrollPane1.setViewportView(jTable1);
-        jpcenter.add(jbtnAdd);        
-//        jpcenter.add(jScrollPane1);
+        jScrollPane1Order.setViewportView(jTable1Order);
+        
+        jpcenter.add(jScrollPane1Order);
 
 //        jpcenter.add();
         this.getContentPane().add(jpcenter, BorderLayout.EAST);
@@ -162,12 +184,33 @@ public class OrderForm extends JFrame implements ActionListener {
     public void btnAdd_Click(ActionEvent e) {
        int column = 0;
        int row = jTable1.getSelectedRow();
-       String value = jTable1.getModel().getValueAt(row, column).toString();
-       JOptionPane.showMessageDialog(null, value);
-       
-       
-    }
+       String id = jTable1.getModel().getValueAt(row, 0).toString();       
+       String name = jTable1.getModel().getValueAt(row, 1).toString();       
+       String price = jTable1.getModel().getValueAt(row, 5).toString();
 
+       int quantity=Integer.parseInt(JOptionPane.showInputDialog(null,"Enter quantity")); 
+//       JOptionPane.showMessageDialog(null, id+" "+name+" "+quantity);
+       
+       createOrderTable(id, name, price, quantity);
+    }
+    public void createOrderTable(String id, String name, String price, int quantity){
+        Object[][]copy=dataOrder.clone();
+        dataOrder=new Object[copy.length+1][4];
+        for(int i=0;i<copy.length;i++){
+            dataOrder[i][0]=copy[i][0];
+            dataOrder[i][1]=copy[i][1];
+            dataOrder[i][2]=copy[i][2];            
+            dataOrder[i][3]=copy[i][3];
+        }
+        dataOrder[copy.length][0]=id;
+        dataOrder[copy.length][1]=name;
+        dataOrder[copy.length][2]=price;        
+        dataOrder[copy.length][3]=quantity;
+
+        String[] titleOrder = {"VegID", "Name", "Price","Quantity"};
+        DefaultTableModel modelOrder = new DefaultTableModel(dataOrder, titleOrder);
+        jTable1Order.setModel(modelOrder);
+    }
     public void btnEdit_Click(ActionEvent e) throws SQLException {
     }
 
@@ -178,6 +221,41 @@ public class OrderForm extends JFrame implements ActionListener {
     public void btnRefresh_Click(ActionEvent e) throws SQLException {
         
     }
+    
+    public void btnSave_Click(ActionEvent e){
+        OrderBLL oB=new OrderBLL();
+        long now = System.currentTimeMillis();
+        java.sql.Date date = new java.sql.Date(now);
+        OrderDetailBLL odB=new OrderDetailBLL();
+        Order o=new Order();
+        customer=customerBLL.getCustomer(3);
+        int total=0;
+        for(int i=0;i<dataOrder.length;i++){
+            total+=Float.parseFloat(dataOrder[i][2].toString());
+        }
+        
+        o.setDate(date);
+        o.setNote(JOptionPane.showInputDialog(null,"Note something"));
+        o.setTotal(total);
+        o.setCustomer(customer);
+
+        Serializable orderIdAdded=oB.newOrder(o);
+        System.out.println("created id: " + orderIdAdded);
+        Order orderRes=oB.getOrder(Integer.parseInt(orderIdAdded.toString()));
+        
+        for(int i=0;i<dataOrder.length;i++){
+            OrderDetail od=new OrderDetail();
+            Vegetable veg=vegBLL.getVeg(Integer.parseInt(dataOrder[i][0].toString()));
+            
+            od.setVegetable(veg);            
+            od.setOrder(orderRes);
+            od.setPrice(Float.parseFloat(dataOrder[i][2].toString()));
+            od.setQuantity(Integer.parseInt(dataOrder[i][3].toString()));
+
+            odB.newOrderDetail(od);
+        }
+        JOptionPane.showMessageDialog(null, "Order saved");
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -185,11 +263,13 @@ public class OrderForm extends JFrame implements ActionListener {
 
     }
     JScrollPane jScrollPane1;
+    JScrollPane jScrollPane1Order;
     JComboBox cbCategory;
     JTable jTable1 = new JTable();
+    JTable jTable1Order=new JTable();
     JLabel title, lbStatus, lbFind;
     JPanel jpcenter, jptop, jpleft, jpbot;
-    JButton jbtnAdd, jbtnUpdate, jbtnEdit, jbtnFind, jbtnRefresh;
+    JButton jbtnAdd, jbtnUpdate, jbtnEdit, jbtnFind, jbtnRefresh, jbtnSave;
     JTextField jtxtFind;
 
     

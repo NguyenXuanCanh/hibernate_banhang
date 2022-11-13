@@ -4,6 +4,7 @@
  */
 package hibernatebanhang.DAL;
 
+import java.io.Serializable;
 import org.hibernate.Session;
 
 /**
@@ -17,34 +18,24 @@ public class OrderDetailDAL {
     {
         session = HibernateUtils.getSessionFactory().openSession();
     }
-    public OrderDetail getOrderDetail(int orderDetailID)
-    {
-        OrderDetail obj;
-        session.beginTransaction();
-        obj = session.get(OrderDetail.class, orderDetailID);
-        session.getTransaction().commit();
-        return obj;
-        
-    }
+//    public OrderDetail getOrderDetail(int orderID, int vegetableID)
+//    {
+//        OrderDetail obj;
+//        session.beginTransaction();
+//        obj = session.get(OrderDetail.class, orderID, vegetableID);
+//        session.getTransaction().commit();
+//        return obj;
+//        
+//    }
 
-    public void addOrderDetail(Order obj)
+    public void addOrderDetail(OrderDetail obj)
     {
         session.save(obj);
     }
 
-    public void deleteOrderDetail(Order obj)
+    public void deleteOrderDetail(OrderDetail obj)
     {
         session.delete(obj);
     }
     
-    public static void main(String args[])
-    {
-        OrderDetailDAL dal = new OrderDetailDAL();
-        //Vegetable obj = dal.getVegetable(1);
-        //System.out.println(obj.getVegetableName());
-        OrderDetail order = dal.getOrderDetail(1);
-        
-        System.out.print("ID: " + order.getOrderID()); 
-    
-    }
 }

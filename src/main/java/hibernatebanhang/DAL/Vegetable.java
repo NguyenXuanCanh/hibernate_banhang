@@ -1,5 +1,6 @@
 
 package hibernatebanhang.DAL;
+import java.util.List;
 
 import javax.persistence.*;
 import lombok.Data;
@@ -27,6 +28,9 @@ public class Vegetable {
     private Double Price;
     
     @ManyToOne
-    @JoinColumn(name="CatagoryID")
+    @JoinColumn(name="CatagoryID") 
     private Category catagory;
+    
+    @OneToMany (mappedBy = "vegetable")
+    private List<OrderDetail> listOrderDetail;
 }

@@ -4,10 +4,23 @@
  */
 package BLL;
 
+import hibernatebanhang.DAL.OrderDetail;
+import hibernatebanhang.DAL.OrderDetailDAL;
+
 /**
  *
  * @author Canh
  */
 public class OrderDetailBLL {
+    private OrderDetailDAL orderDetailDAL;
     
+    public OrderDetailBLL()
+    {
+        orderDetailDAL = new OrderDetailDAL();
+    }
+    
+    public void newOrderDetail(OrderDetail od)
+    {
+        orderDetailDAL.addOrderDetail(od);
+    }
 }

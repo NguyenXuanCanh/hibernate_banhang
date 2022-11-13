@@ -4,10 +4,29 @@
  */
 package BLL;
 
+import hibernatebanhang.DAL.Order;
+import hibernatebanhang.DAL.OrderDAL;
+import java.io.Serializable;
+
 /**
  *
  * @author Canh
  */
 public class OrderBLL {
+    private OrderDAL orderDAL;
     
+    public OrderBLL()
+    {
+        orderDAL = new OrderDAL();
+    }
+    
+    public Order getOrder(int od)
+    {
+        return orderDAL.getOrder(od);
+    }
+    
+    public Serializable newOrder(Order o)
+    {
+        return orderDAL.addOrder(o);
+    }
 }

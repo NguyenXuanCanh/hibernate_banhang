@@ -21,6 +21,11 @@ public class VegetableBLL {
       vegDAL = new VegetableDAL();
   }
   
+  public Vegetable getVeg(int vegId)
+  {
+        return vegDAL.getVegetable(vegId);
+  }
+  
   public Object[][] converVegetable(List<Vegetable> list)
   {
       int rows = list.size();
