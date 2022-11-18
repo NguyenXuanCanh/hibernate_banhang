@@ -72,6 +72,7 @@ public class VegetableForm extends JFrame implements ActionListener {
     }
     private void loadVegetable(int cateID)
     {
+        
         List listVeg = cateBLL.getCategory(cateID).getListVegetable();
         Object[][] data = vegBLL.converVegetable(listVeg);
         String[] title = {"VegID", "Name", "Unit", "Amount", "Images", "Price"};
@@ -81,6 +82,7 @@ public class VegetableForm extends JFrame implements ActionListener {
     }
     private void loadCategory()
     {
+        cbCategory = new JComboBox<String>();
         List listCate = cateBLL.loadCategory();
         Category[] newList = cateBLL.convertList1(listCate);
         CategoryModel model= new CategoryModel(newList);

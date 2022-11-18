@@ -5,7 +5,12 @@
 package GUI;
 
 import BLL.CategoryBLL;
+import hibernatebanhang.DAL.*;
+import java.awt.Color;
+import java.awt.Font;
 import java.util.List;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -14,10 +19,13 @@ import javax.swing.table.DefaultTableModel;
  */
 public class CategoryForm extends javax.swing.JFrame {
 
-    private CategoryBLL cateBLL;
+    private CategoryBLL  cateBLL = new CategoryBLL();
+    DefaultTableModel model = new DefaultTableModel();
+    int categoryID = 0;
     public CategoryForm() {
         initComponents();
-        cateBLL = new CategoryBLL();
+        setSize(950, 550);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         loadCategoryTable();
     }
 
@@ -26,9 +34,13 @@ public class CategoryForm extends javax.swing.JFrame {
         List listCate = cateBLL.loadCategory();
         Object[][] datamodel;
         datamodel = cateBLL.convertList(listCate);
-        String[] title = {"TT", "Name", "Description", "Count of Vegetable"};
-        DefaultTableModel model = new DefaultTableModel(datamodel, title);
+        String[] title = {"ID", "Name", "Description", "Count of Vegetable"};
+        model = new DefaultTableModel(datamodel, title);
         jTableCategory.setModel(model);
+        
+        jTableCategory.setRowHeight(25);
+        jTableCategory.getTableHeader().setFont(new Font("Courier New",Font.PLAIN,16));
+        jTableCategory.getTableHeader().setBackground(new Color(17,185,255));
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -41,10 +53,30 @@ public class CategoryForm extends javax.swing.JFrame {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         jTableCategory = new javax.swing.JTable();
+        btnadd = new javax.swing.JButton();
+        btndel = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        tfName = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        txtDescription = new javax.swing.JTextArea();
+        jButton1 = new javax.swing.JButton();
+        btnExit = new javax.swing.JButton();
+        btnupdate = new javax.swing.JButton();
+        btnFind = new javax.swing.JButton();
+        tfFind = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Table of Category");
+        getContentPane().setLayout(null);
 
+        jTableCategory = new javax.swing.JTable(){
+            public boolean isCellEditable(int row,int column)
+            {
+                return false;
+            }
+        };
         jTableCategory.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -56,27 +88,236 @@ public class CategoryForm extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        jTableCategory.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTableCategoryMouseClicked(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jTableCategoryMouseExited(evt);
+            }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jTableCategoryMousePressed(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTableCategory);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(24, 24, 24)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 555, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(17, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(109, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(73, 73, 73))
-        );
+        getContentPane().add(jScrollPane1);
+        jScrollPane1.setBounds(380, 110, 486, 212);
+
+        btnadd.setText("ADD CATEGORY");
+        btnadd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnaddActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnadd);
+        btnadd.setBounds(22, 361, 150, 34);
+
+        btndel.setText("DELETE");
+        btndel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btndelActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btndel);
+        btndel.setBounds(280, 360, 72, 34);
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        jLabel1.setText("CATEGORY");
+        getContentPane().add(jLabel1);
+        jLabel1.setBounds(488, 23, 128, 32);
+
+        jLabel2.setText("Name");
+        getContentPane().add(jLabel2);
+        jLabel2.setBounds(22, 141, 80, 16);
+        getContentPane().add(tfName);
+        tfName.setBounds(110, 130, 234, 32);
+
+        jLabel3.setText("Description");
+        getContentPane().add(jLabel3);
+        jLabel3.setBounds(22, 183, 100, 16);
+
+        txtDescription.setColumns(20);
+        txtDescription.setRows(5);
+        jScrollPane2.setViewportView(txtDescription);
+        txtDescription.getAccessibleContext().setAccessibleParent(jScrollPane1);
+
+        getContentPane().add(jScrollPane2);
+        jScrollPane2.setBounds(110, 170, 214, 130);
+
+        jButton1.setText("RELOAD");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jButton1);
+        jButton1.setBounds(180, 360, 85, 34);
+
+        btnExit.setText("EXIT");
+        btnExit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExitActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnExit);
+        btnExit.setBounds(770, 360, 72, 40);
+
+        btnupdate.setText("UPDATE");
+        btnupdate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnupdateActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnupdate);
+        btnupdate.setBounds(370, 360, 130, 34);
+
+        btnFind.setText("FIND");
+        btnFind.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnFindActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnFind);
+        btnFind.setBounds(380, 60, 97, 33);
+        getContentPane().add(tfFind);
+        tfFind.setBounds(480, 60, 383, 33);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnaddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnaddActionPerformed
+        // TODO add your handling code here:
+        try
+        {
+            Category cate  = new Category();
+            cate.setName(tfName.getText());
+            cate.setDescription(txtDescription.getText());
+            JOptionPane.showConfirmDialog(this,cateBLL.newCategory(cate) , "Add category", JOptionPane.CLOSED_OPTION);
+            loadCategoryTable();
+            System.out.println("load is done");
+        }
+        catch(Exception e)
+        {
+            JOptionPane.showConfirmDialog(this,e , "Add category", JOptionPane.CLOSED_OPTION);
+        }
+        finally
+        {
+            this. loadCategoryTable();
+        }
+    }//GEN-LAST:event_btnaddActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        this.loadCategoryTable();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jTableCategoryMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableCategoryMouseExited
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTableCategoryMouseExited
+
+    private void jTableCategoryMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableCategoryMousePressed
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_jTableCategoryMousePressed
+
+    private void jTableCategoryMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableCategoryMouseClicked
+        // TODO add your handling code here:
+        
+        int i = jTableCategory.getSelectedRow();
+        categoryID = Integer.parseInt(jTableCategory.getValueAt(i, 0)+"");
+        tfName.setText((String) jTableCategory.getValueAt(i,1));
+        txtDescription.setText((String) jTableCategory.getValueAt(i, 2));
+        
+    }//GEN-LAST:event_jTableCategoryMouseClicked
+
+    private void btndelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btndelActionPerformed
+        // TODO add your handling code here:
+        if(categoryID != 0)
+        {
+            Category cate = new Category();
+            cate.setCatagoryID(categoryID);
+            cate.setName(tfName.getText().trim());
+            cate.setDescription(txtDescription.getText());
+            JOptionPane.showConfirmDialog(this,cateBLL.delete(cate) , "Delete category", JOptionPane.CLOSED_OPTION);
+            loadCategoryTable();
+            System.out.println("load is done");
+            categoryID = 0;
+        }
+        else
+        {
+            JOptionPane.showConfirmDialog(this," Please select a row which you want to delete!" , "Delete category", JOptionPane.CLOSED_OPTION);
+        }
+        this.loadCategoryTable();
+    }//GEN-LAST:event_btndelActionPerformed
+
+    private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
+        // TODO add your handling code here:
+          this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+            this.setVisible(false);
+    }//GEN-LAST:event_btnExitActionPerformed
+
+    private void btnupdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnupdateActionPerformed
+        // TODO add your handling code here:
+        int i = jTableCategory.getSelectedRow();
+        if(i == 0)
+        {
+            JOptionPane.showMessageDialog(this, "Vui long chon Category can update!");
+        }
+        else
+        {
+            if(tfName.getText().trim().equalsIgnoreCase("") || txtDescription.getText().trim().equals(""))
+            {
+                 JOptionPane.showMessageDialog(this, "Vui Lòng điền đầy đủ thông tin!");
+            }
+            else
+            {
+                try
+                {
+                    Category cate = new Category();
+                    cate.setCatagoryID(categoryID);
+                    cate.setName(tfName.getText().trim());
+                    cate.setDescription(txtDescription.getText().trim());
+                    int choose = JOptionPane.showConfirmDialog(this, "Bạn có muốn update không?","Update",JOptionPane.YES_NO_OPTION);
+                    if(choose ==0)
+                    {
+                        JOptionPane.showMessageDialog(this, cateBLL.update(cate));
+                    }
+                    categoryID = 0;
+                }
+                catch(Exception e)
+                {
+                    JOptionPane.showMessageDialog(this, e);
+                }
+               
+            }
+            
+        }
+    }//GEN-LAST:event_btnupdateActionPerformed
+
+    private void btnFindActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFindActionPerformed
+        // TODO add your handling code here:
+        String find = tfFind.getText().trim();
+        try
+        {
+            List<Category> findlist = cateBLL.find(find);
+             Object[][] datamodel;
+            datamodel = cateBLL.convertList(findlist);
+            String[] title = {"ID", "Name", "Description", "Count of Vegetable"};
+            model.setRowCount(0);
+            model.setDataVector(datamodel,title);
+            jTableCategory.setModel(model);
+            jTableCategory.setRowHeight(25);
+            jTableCategory.getTableHeader().setFont(new Font("Courier New",Font.PLAIN,16));
+            jTableCategory.getTableHeader().setBackground(new Color(17,185,255));
+            
+        }
+        catch(Exception e )
+        {
+             JOptionPane.showMessageDialog(this, e);
+        }
+            
+    }//GEN-LAST:event_btnFindActionPerformed
 
     /**
      * @param args the command line arguments
@@ -114,7 +355,20 @@ public class CategoryForm extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnExit;
+    private javax.swing.JButton btnFind;
+    private javax.swing.JButton btnadd;
+    private javax.swing.JButton btndel;
+    private javax.swing.JButton btnupdate;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTableCategory;
+    private javax.swing.JTextField tfFind;
+    private javax.swing.JTextField tfName;
+    private javax.swing.JTextArea txtDescription;
     // End of variables declaration//GEN-END:variables
 }

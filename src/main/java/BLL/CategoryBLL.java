@@ -27,6 +27,10 @@ public class CategoryBLL {
         
         return list;
     }
+     public List<Category> getCategorybyName(String name)
+    {        
+        return cateDAL.getCategorybyName(name);
+    }
     public Category[] convertList1 (List<Category> list)
     {
         int rows = list.size();
@@ -37,6 +41,32 @@ public class CategoryBLL {
             
         }
         return newList;
+    }
+    public Category getCategorybyID(int CategoryID)
+    {
+        return cateDAL.getCategory(CategoryID);
+    }
+    public String delete(Category cate)
+    {
+        if(cateDAL.deleteCategory(cate))
+        {
+            return "Success";
+        }
+        else
+        {
+            return "Fails";
+        }
+    }
+     public String update(Category cate)
+    {
+        if(cateDAL.updateCategory(cate))
+        {
+            return "Success";
+        }
+        else
+        {
+            return "Fails";
+        }
     }
     public Object[][] convertList(List<Category> list)
     {
@@ -52,13 +82,26 @@ public class CategoryBLL {
         }
         return obj;
     }
-    public void newCategory(Category c)
+    public String newCategory(Category c)
     {
-        cateDAL.addCategory(c);
+        if(cateDAL.addCategory(c))
+        {
+            return "Success";
+        }
+        else
+        {
+            return "fails";
+        }
+        
     }
+    
     public Category getCategory(int CategoryID)
     {
         Category c = cateDAL.getCategory(CategoryID);
         return c;
+    }
+    public List<Category> find(String name)
+    {
+        return cateDAL.find(name);
     }
 }

@@ -1,4 +1,4 @@
-
+ 
 package hibernatebanhang.DAL;
 
 import javax.persistence.*;
@@ -27,6 +27,10 @@ public class Vegetable {
     private Double Price;
     
     @ManyToOne
-    @JoinColumn(name="CatagoryID")
+    @JoinColumn(name="CatagoryID" )
     private Category catagory;
+    
+    public static void main(String[] args) {
+        System.out.println("ss");
+    }
 }

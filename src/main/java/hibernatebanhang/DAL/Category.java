@@ -17,6 +17,7 @@ import org.hibernate.*;
 @Entity
 @Table
 public class Category {
+
     
     @Id
     private int CatagoryID;
