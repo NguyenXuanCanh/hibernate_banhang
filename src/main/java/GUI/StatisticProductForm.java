@@ -279,17 +279,34 @@ public class StatisticProductForm extends javax.swing.JFrame {
             });
             k++;
         }
-        // sort amount
-        Collections.sort(listToTal, statis.amountComparator);
-        // top product trend
-        lbBestTop1.setText(listToTal.get(0).getName());
-        lbBestTop2.setText(listToTal.get(1).getName());
-        lbBestTop3.setText(listToTal.get(2).getName());
-
-        // top product not trend
-        lbSlowlyTop1.setText(listToTal.get(listToTal.size() - 3).getName());
-        lbSlowlyTop2.setText(listToTal.get(listToTal.size() - 2).getName());
-        lbSlowlyTop3.setText(listToTal.get(listToTal.size() - 1).getName());
+	// sort amount
+	Collections.sort(listToTal, statis.amountComparator);
+	// top brand
+        textField.setText(listToTal.get(0).getName());
+        textField_12.setText(listToTal.get(1).getName());
+        textField_13.setText(listToTal.get(2).getName());
+        textField.setEditable(false);
+        textField_12.setEditable(false);
+        textField_13.setEditable(false);
+        // worst product
+        textField_14.setText(listToTal.get(listToTal.size() - 1).getName());
+        textField_14.setEditable(false);
+        // sort total
+        Collections.sort(listToTal, statis.totalComparator);
+        textField_1.setText(listToTal.get(0).getName());
+        textField_2.setText(listToTal.get(listToTal.size() - 1).getName());
+        textField_1.setEditable(false);
+        textField_2.setEditable(false);
+        // money of bill in a month
+        textField_9.setText(Tester.format(totalBillOfMonth));
+        textField_9.setEditable(false);
+        // money of entercoupon in a month
+        totalEnterOfMonth = ecdBLL.getTotal();
+        textField_10.setText(Tester.format(totalEnterOfMonth));
+        textField_10.setEditable(false);
+        // doannh thu
+        textField_11.setText(Tester.format(totalBillOfMonth - totalEnterOfMonth));
+        textField_11.setEditable(false);
     }
     
     /**
