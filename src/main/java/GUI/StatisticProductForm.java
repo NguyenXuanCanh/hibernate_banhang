@@ -4,6 +4,15 @@
  */
 package GUI;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author huynh
@@ -16,6 +25,19 @@ public class StatisticProductForm extends javax.swing.JFrame {
     public StatisticProductForm() {
         initComponents();
     }
+    
+    Date now = new Date();
+    String formatSetMonth = new SimpleDateFormat("MM").format(now);
+    String formatSetYear = new SimpleDateFormat("yyyy").format(now);
+    String formatMonth = new SimpleDateFormat("MM/yyyy").format(now);
+    String monthNow = formatMonth.formatted(now);
+    String setMonthNow = formatSetMonth.formatted(now); 
+    String setYearNow = formatSetYear.formatted(now);
+    String monthSelect = setMonthNow;
+    String yearSelect = setYearNow;
+
+    List<statis> resultList = new ArrayList<statis>();
+    DefaultTableModel model = new DefaultTableModel();
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -50,7 +72,7 @@ public class StatisticProductForm extends javax.swing.JFrame {
 
         lbHeading.setFont(new java.awt.Font("Segoe UI", 3, 24)); // NOI18N
         lbHeading.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lbHeading.setText("Thống kê kinh doanh");
+        lbHeading.setText("Business Statistic");
 
         lbStatistic.setText("Statistic By:");
 
@@ -62,6 +84,11 @@ public class StatisticProductForm extends javax.swing.JFrame {
         });
 
         cbMonth.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12" }));
+        cbMonth.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbMonthActionPerformed(evt);
+            }
+        });
 
         lbMonth.setText("Month:");
 
@@ -209,13 +236,62 @@ public class StatisticProductForm extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSearchActionPerformed
 
     private void cbYearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbYearActionPerformed
-        // TODO add your handling code here:
+        yearSelect = cbYear.getSelectedItem().toString();
+        lbStatistic.setText("Business Statistic : " + monthSelect + "/" + yearSelect);
+        try {
+            displayList(monthSelect + "/" + yearSelect);
+        } catch (ParseException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
     }//GEN-LAST:event_cbYearActionPerformed
 
     private void cbStatictisActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbStatictisActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_cbStatictisActionPerformed
 
+    private void cbMonthActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbMonthActionPerformed
+        monthSelect = cbMonth.getSelectedItem().toString();
+        lbStatistic.setText("Business Statistic : " + monthSelect + "/" + yearSelect);
+        try {
+                displayList(monthSelect + "/" + yearSelect);
+        } catch (ParseException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+        }
+    }//GEN-LAST:event_cbMonthActionPerformed
+
+    private void displayList(String monthNow) throws ParseException {
+        List<statis> listToTal = new ArrayList<statis>();
+        model.setRowCount(0);
+        resultList = bdBLL.statisticByProduct(monthNow);
+        int k = 0;
+        if(resultList.size() == 0) {
+            JOptionPane.showMessageDialog(null, "No data!");
+            return;
+        }
+        while(k < resultList.size()) {
+            statis sta = new statis(resultList.get(k).getName(), resultList.get(k).getAmount());
+            listToTal.add(sta);
+            statis s = resultList.get(k);
+            model.addRow(new Object [] {
+                model.getRowCount()+1, s.getName(), s.getAmount() 
+            });
+            k++;
+        }
+        // sort amount
+        Collections.sort(listToTal, statis.amountComparator);
+        // top product trend
+        lbBestTop1.setText(listToTal.get(0).getName());
+        lbBestTop2.setText(listToTal.get(1).getName());
+        lbBestTop3.setText(listToTal.get(2).getName());
+
+        // top product not trend
+        lbSlowlyTop1.setText(listToTal.get(listToTal.size() - 3).getName());
+        lbSlowlyTop2.setText(listToTal.get(listToTal.size() - 2).getName());
+        lbSlowlyTop3.setText(listToTal.get(listToTal.size() - 1).getName());
+    }
+    
     /**
      * @param args the command line arguments
      */
