@@ -26,6 +26,11 @@ public class VegetableBLL {
         return vegDAL.getVegetable(vegId);
   }
   
+  public List<Vegetable> find(String name)
+  {
+      return vegDAL.find(name);
+  }
+  
   public Object[][] converVegetable(List<Vegetable> list)
   {
       int rows = list.size();

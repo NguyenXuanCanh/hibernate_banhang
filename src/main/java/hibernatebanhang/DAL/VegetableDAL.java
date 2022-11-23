@@ -46,6 +46,17 @@ public class VegetableDAL {
         session.delete(obj);
     }
     
+    public List<Vegetable> find(String name)
+    {
+        List<Vegetable> list;
+         session.beginTransaction();
+        Query q = session.createQuery("FROM Vegetable WHERE VegetableName like :Name");
+        q.setParameter("Name", '%'+name+'%');
+        list=  q.list();
+        session.getTransaction().commit();
+        return list;
+    }
+    
     public static void main(String args[])
     {
         VegetableDAL dal = new VegetableDAL();

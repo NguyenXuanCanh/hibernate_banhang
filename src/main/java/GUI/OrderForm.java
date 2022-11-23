@@ -146,11 +146,17 @@ public class OrderForm extends JFrame implements ActionListener {
         jbtnAdd.addActionListener((ActionEvent e) -> {
             btnAdd_Click(e);
         });
+//        jbtnDel = new JButton("Delele product from order");
+//        jbtnDel.addActionListener((ActionEvent e) -> {
+//            btnDel_Click(e);
+//        });
         jbtnSave = new JButton("Save order");
         jbtnSave.addActionListener((ActionEvent e) -> {
             btnSave_Click(e);
         });
+//        jptop.add(jbtnDel);        
         jptop.add(jbtnSave);
+
         this.getContentPane().add(jptop, BorderLayout.NORTH);
     }
 
@@ -193,6 +199,27 @@ public class OrderForm extends JFrame implements ActionListener {
        
        createOrderTable(id, name, price, quantity);
     }
+
+//    public void btnDel_Click(ActionEvent e) {
+////       int column = 0;
+//       int row = jTable1Order.getSelectedRow();
+//       
+//       System.out.print(dataOrder[row][0]);
+//       Object[][]copy=dataOrder.clone();
+//       dataOrder=new Object[copy.length-1][4];
+//       for(int i=0;i<copy.length;i++){
+//            if(i>=row){
+//                dataOrder[i][0]=copy[i+1][0];
+//                dataOrder[i][1]=copy[i+1][1];
+//                dataOrder[i][2]=copy[i+1][2];            
+//                dataOrder[i][3]=copy[i+1][3];
+//            }
+//       }
+//       String[] titleOrder = {"VegID", "Name", "Price","Quantity"};
+//       DefaultTableModel modelOrder = new DefaultTableModel(dataOrder, titleOrder);
+//       jTable1Order.setModel(modelOrder);
+//    }
+    
     public void createOrderTable(String id, String name, String price, int quantity){
         Object[][]copy=dataOrder.clone();
         dataOrder=new Object[copy.length+1][4];
@@ -215,7 +242,12 @@ public class OrderForm extends JFrame implements ActionListener {
     }
 
     public void btnFind_Click(ActionEvent e) {
-        
+        List<Vegetable> find = vegBLL.find(jtxtFind.getText().trim()+"");
+        System.out.print(find);
+        Object[][] data = vegBLL.converVegetable(find);
+        String[] title = {"VegID", "Name", "Unit", "Amount", "Images", "Price"};
+        DefaultTableModel model = new DefaultTableModel(data, title);
+        jTable1.setModel(model);
     }
 
     public void btnRefresh_Click(ActionEvent e) throws SQLException {
@@ -224,10 +256,10 @@ public class OrderForm extends JFrame implements ActionListener {
     
     public void btnSave_Click(ActionEvent e){
         OrderBLL oB=new OrderBLL();
-        long now = System.currentTimeMillis();
-        java.sql.Date date = new java.sql.Date(now);
         OrderDetailBLL odB=new OrderDetailBLL();
         Order o=new Order();
+        long now = System.currentTimeMillis();
+        java.sql.Date date = new java.sql.Date(now);
         customer=customerBLL.getCustomer(3);
         int total=0;
         for(int i=0;i<dataOrder.length;i++){
@@ -262,6 +294,7 @@ public class OrderForm extends JFrame implements ActionListener {
         throw new UnsupportedOperationException("Not supported yet.");
 
     }
+    
     JScrollPane jScrollPane1;
     JScrollPane jScrollPane1Order;
     JComboBox cbCategory;
@@ -269,7 +302,7 @@ public class OrderForm extends JFrame implements ActionListener {
     JTable jTable1Order=new JTable();
     JLabel title, lbStatus, lbFind;
     JPanel jpcenter, jptop, jpleft, jpbot;
-    JButton jbtnAdd, jbtnUpdate, jbtnEdit, jbtnFind, jbtnRefresh, jbtnSave;
+    JButton jbtnAdd, jbtnUpdate, jbtnEdit, jbtnFind, jbtnRefresh, jbtnSave, jbtnDel;
     JTextField jtxtFind;
 
     
